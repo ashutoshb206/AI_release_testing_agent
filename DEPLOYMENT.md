@@ -31,8 +31,9 @@ Set these in Railway dashboard:
 
 ## What's Configured
 
-✅ **Nixpacks.toml** - Chromium + Playwright installation  
+✅ **nixpacks.toml** - Chromium + Playwright installation  
 ✅ **railway.toml** - Railway deployment settings  
+✅ **Dockerfile** - Fallback deployment option  
 ✅ **database.py** - Uses /tmp for Railway ephemeral storage  
 ✅ **.gitignore** - Excludes sensitive files  
 ✅ **Health Check** - `/api/config` endpoint for monitoring  
@@ -46,6 +47,12 @@ Set these in Railway dashboard:
 - 🔗 Jira integration support
 - 📡 Real-time test execution streaming
 
+## Build System
+
+Railway will try in this order:
+1. **Nixpacks** (primary) - Uses Nix packages for Chromium + Python
+2. **Dockerfile** (fallback) - If Nixpacks fails, uses Docker
+
 ## Post-Deployment
 
 1. Your app will be available at `https://your-app-name.up.railway.app`
@@ -55,14 +62,18 @@ Set these in Railway dashboard:
 
 ## Troubleshooting
 
-**Build fails?**
-- Check that `nixpacks.toml` is in project root
-- Verify Railway has Nixpacks enabled
+**Build fails with Nixpacks?**
+- Railway will automatically fallback to Dockerfile
+- Check build logs in Railway dashboard
 
 **Playwright errors?**
-- Railway automatically installs Chromium via nixpkgs
+- Both Nixpacks and Docker install Chromium
 - Browsers are installed during build phase
 
 **Database issues?**
 - SQLite database is stored in `/tmp` on Railway
 - Data persists between deployments within the same environment
+
+**Port issues?**
+- Railway automatically assigns PORT via environment variable
+- App uses `$PORT` for dynamic binding
