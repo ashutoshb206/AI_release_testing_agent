@@ -1,5 +1,6 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "nixpacks build"
 
 [deploy]
 healthcheckPath = "/api/config"
@@ -9,3 +10,4 @@ restartPolicyMaxRetries = 10
 
 [env]
 PORT = "8000"
+NIXPACKS_PATH = "/opt/venv/bin:$NIXPACKS_PATH"
