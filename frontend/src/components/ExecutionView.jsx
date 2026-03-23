@@ -58,53 +58,60 @@ export default function ExecutionView({ runId, onReset }) {
   }
 
   return (
-    <div style={{ maxWidth: 940, margin: '0 auto', padding: '32px 24px' }}>
+    <div style={{ maxWidth: 980, margin: '0 auto', animation: 'fadeIn 0.3s ease' }}>
       {/* Top bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {isRunning ? (
-            <span style={{
-              width: 10, height: 10, borderRadius: '50%', background: '#22c55e',
-              boxShadow: '0 0 8px #22c55e', display: 'inline-block',
-              animation: 'pulse 1.2s infinite',
-            }} />
-          ) : (
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-          )}
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>
-            {isRunning ? 'Running Tests…' : 'Run Complete'}
-          </h2>
-          <span style={{ fontSize: 12, color: 'var(--text3)' }} className="monospace">{runId.slice(0, 8)}</span>
+      <div className="card" style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {isRunning ? (
+              <span style={{
+                width: 12, height: 12, borderRadius: '50%', background: '#22c55e',
+                boxShadow: '0 0 12px #22c55e', display: 'inline-block',
+                animation: 'pulse 1.2s infinite',
+              }} />
+            ) : (
+              <div style={{
+                width: 12, height: 12, borderRadius: '50%', background: 'var(--accent)',
+                display: 'inline-block'
+              }} />
+            )}
+            <div>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
+                {isRunning ? 'Running Tests…' : 'Run Complete'}
+              </h2>
+              <span style={{ fontSize: 12, color: 'var(--text3)' }} className="monospace">{runId.slice(0, 8)}</span>
+            </div>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {!isRunning && (
             <>
               <button
                 onClick={() => openReport(runId)}
+                className="card"
                 style={{
                   background: 'var(--bg3)', color: 'var(--text2)',
-                  border: '1px solid var(--border2)', borderRadius: 8,
-                  padding: '8px 16px', fontWeight: 500, fontSize: 13,
+                  border: '1px solid var(--border2)', borderRadius: 'var(--radius)',
+                  padding: '10px 18px', fontWeight: 500, fontSize: 13,
+                  transition: 'all 0.2s ease'
                 }}
               >📄 View Report</button>
               <button
                 onClick={handleDownloadReport}
                 disabled={downloading}
+                className="primary-button"
                 style={{
-                  background: downloading ? 'var(--bg3)' : 'var(--accent)', 
-                  color: downloading ? 'var(--text2)' : 'white',
-                  border: '1px solid var(--border2)', borderRadius: 8,
-                  padding: '8px 16px', fontWeight: 500, fontSize: 13,
-                  cursor: downloading ? 'not-allowed' : 'pointer',
+                  padding: '10px 18px', fontSize: 13,
+                  minWidth: '120px'
                 }}
               >
                 {downloading ? (
                   <>
                     <span style={{ 
-                      width: 12, height: 12, border: '2px solid var(--text3)', 
-                      borderTopColor: 'var(--accent)', borderRadius: '50%', 
+                      width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', 
+                      borderTopColor: 'white', borderRadius: '50%', 
                       display: 'inline-block', animation: 'spin 0.7s linear infinite',
-                      marginRight: 6 
+                      marginRight: 8 
                     }} />
                     Downloading...
                   </>
@@ -118,8 +125,9 @@ export default function ExecutionView({ runId, onReset }) {
             onClick={onReset}
             style={{
               background: 'transparent', color: 'var(--text2)',
-              border: '1px solid var(--border2)', borderRadius: 8,
-              padding: '8px 16px', fontWeight: 500, fontSize: 13,
+              border: '1px solid var(--border2)', borderRadius: 'var(--radius)',
+              padding: '10px 18px', fontWeight: 500, fontSize: 13,
+              transition: 'all 0.2s ease'
             }}
           >← New Run</button>
         </div>

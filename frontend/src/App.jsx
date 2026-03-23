@@ -4,14 +4,20 @@ import ExecutionView from './components/ExecutionView'
 import RunHistory from './components/RunHistory'
 import RunDetail from './components/RunDetail'
 import Architecture from './components/Architecture'
-import { createRun } from './utils/api'
+import ThemeToggle from './components/ThemeToggle'
+import { createRun, getConfig } from './utils/api'
+import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 
-export default function App() {
+function AppContent() {
   const [view, setView] = useState('new')       // 'new' | 'running' | 'history' | 'detail' | 'architecture'
   const [runId, setRunId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [config, setConfig] = useState({ provider: 'Groq', model: 'Llama 3.3 70B' })
+
+  useEffect(() => {
+    getConfig().then(setConfig).catch(console.error)
+  }, [])
 
   const handleSubmit = async (form) => {
     setLoading(true)
@@ -32,116 +38,117 @@ export default function App() {
     setView('detail')
   }
 
-  useEffect(() => {
-    fetch('/api/config')
-      .then(res => res.json())
-      .then(setConfig)
-      .catch(() => {
-        // Fallback to default values
-        setConfig({ provider: 'Groq', model: 'Llama 3.3 70B' })
-      })
-  }, [])
-
   const NAV = [
     { key: 'new', icon: '🚀', label: 'New Run' },
-    { key: 'architecture', icon: '🏗', label: 'Architecture' },
     { key: 'history', icon: '📋', label: 'History' },
+    { key: 'architecture', icon: '🏗️', label: 'Architecture' },
   ]
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'row', background: 'var(--bg)', color: 'var(--text)' }}>
+      {/* Theme Toggle */}
+      <ThemeToggle />
+
       {/* Sidebar */}
-      <aside style={{
-        width: 200, flexShrink: 0,
-        background: 'var(--bg2)',
-        borderRight: '1px solid var(--border)',
-        display: 'flex', flexDirection: 'column',
-        padding: '20px 12px',
+      <div style={{ 
+        width: 280, 
+        background: 'var(--bg2)', 
+        borderRight: '1px solid var(--border)', 
+        display: 'flex', 
+        flexDirection: 'column',
+        padding: '32px 20px',
+        backdropFilter: 'blur(10px)'
       }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 32, padding: '0 6px' }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 8,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 16, flexShrink: 0,
-          }}>🤖</div>
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>AI Tester</div>
-            <div style={{ fontSize: 10, color: 'var(--text3)' }}>Release Agent</div>
+        {/* Logo/Branding */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ 
+            fontSize: 24, 
+            fontWeight: 800, 
+            marginBottom: 8, 
+            color: 'var(--text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12
+          }}>
+            <div style={{
+              width: 40,
+              height: 40,
+              borderRadius: '12px',
+              background: 'var(--gradient-accent)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 20
+            }}>
+              🤖
+            </div>
+            AI Testing Agent
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.5 }}>
+            Autonomous testing powered by AI
           </div>
         </div>
 
-        {/* Nav */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {NAV.map(({ key, icon, label }) => (
+        {/* Navigation */}
+        <nav style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text3)', marginBottom: 16 }}>
+            Menu
+          </div>
+          {NAV.map(item => (
             <button
-              key={key}
-              onClick={() => setView(key)}
-              className={view === key ? 'sidebar-nav-active' : 'sidebar-nav-inactive'}
+              key={item.key}
+              onClick={() => setView(item.key)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 9,
-                padding: '9px 12px', borderRadius: 8,
-                fontSize: 13, textAlign: 'left',
-                transition: 'all 0.15s',
+                width: '100%',
+                padding: '14px 18px',
+                marginBottom: 6,
+                borderRadius: 'var(--radius)',
+                textAlign: 'left',
+                fontSize: 14,
+                border: 'none',
+                cursor: 'pointer',
+                background: view === item.key ? 'var(--bg3)' : 'transparent',
+                color: view === item.key ? 'var(--accent2)' : 'var(--text2)',
+                fontWeight: view === item.key ? 600 : 400,
+                borderLeft: view === item.key ? '3px solid var(--accent)' : 'none',
+                paddingLeft: view === item.key ? '15px' : '18px',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12
               }}
             >
-              <span style={{ fontSize: 15 }}>{icon}</span>
-              {label}
+              <span style={{ fontSize: 18 }}>{item.icon}</span>
+              <span>{item.label}</span>
             </button>
           ))}
-
-          {/* Active run link */}
-          {runId && view !== 'new' && (
-            <>
-              <div style={{ height: 1, background: 'var(--border)', margin: '8px 0' }} />
-              <button
-                onClick={() => setView('running')}
-                className={view === 'running' ? 'sidebar-nav-active' : 'sidebar-nav-inactive'}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 9,
-                  padding: '9px 12px', borderRadius: 8,
-                  fontSize: 13, textAlign: 'left',
-                  transition: 'all 0.15s',
-                }}
-              >
-                <span style={{ fontSize: 15 }}>▶</span>
-                Current Run
-              </button>
-            </>
-          )}
         </nav>
 
         {/* Footer */}
-        <div style={{ marginTop: 'auto', padding: '0 6px' }}>
-          <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.6 }}>
-            Powered by<br />
-            <span style={{ color: 'var(--accent2)' }}>
-              {config.provider} · {config.model} + Playwright
-            </span>
+        <div style={{ 
+          fontSize: 11, 
+          color: 'var(--text3)', 
+          textAlign: 'center',
+          paddingTop: 20,
+          borderTop: '1px solid var(--border)',
+          lineHeight: 1.5
+        }}>
+          <div style={{ marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Powered by
+          </div>
+          <div style={{ color: 'var(--accent2)', fontWeight: 500 }}>
+            {config.provider}
+          </div>
+          <div style={{ fontSize: 10, marginTop: 2 }}>
+            {config.model}
           </div>
         </div>
-      </aside>
+      </div>
 
-      {/* Main content */}
-      <main style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
-        {error && (
-          <div style={{
-            position: 'sticky', top: 0, zIndex: 100,
-            background: 'rgba(239,68,68,0.1)', borderBottom: '1px solid rgba(239,68,68,0.3)',
-            padding: '10px 24px', color: 'var(--red)', fontSize: 13,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          }}>
-            ⚠ {error}
-            <button
-              onClick={() => setError(null)}
-              style={{ background: 'none', color: 'var(--red)', fontSize: 16, padding: '0 4px' }}
-            >✕</button>
-          </div>
-        )}
-
+      {/* Main Content */}
+      <main style={{ flex: 1, overflow: 'auto', padding: '40px 32px', background: 'var(--bg)' }}>
         {view === 'new' && (
-          <StoryInput onSubmit={handleSubmit} loading={loading} />
+          <StoryInput onSubmit={handleSubmit} loading={loading} error={error} />
         )}
 
         {view === 'running' && runId && (
@@ -161,5 +168,13 @@ export default function App() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   )
 }

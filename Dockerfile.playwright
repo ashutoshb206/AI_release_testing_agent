@@ -13,6 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 WORKDIR /app
 COPY . .
 
+# Install Playwright browsers (in case they're not pre-installed)
+RUN playwright install chromium
+
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app \
     && chown -R app:app /app
@@ -22,8 +25,8 @@ USER app
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/api/config || exit 1
 
-# Start command
+# Start command with proper working directory
 CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

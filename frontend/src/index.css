@@ -1,24 +1,95 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #09090b;
-  --bg2: #161b25;
-  --bg3: #1e2433;
-  --border: rgba(255,255,255,0.04);
-  --border2: rgba(255,255,255,0.14);
-  --text: #e8eaf0;
-  --text2: #8b95a8;
-  --text3: #555f70;
+  --bg: #0a0a0b;
+  --bg2: #111114;
+  --bg3: #1a1a1f;
+  --bg4: #25252b;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --border3: rgba(255,255,255,0.18);
+  --text: #ffffff;
+  --text2: #a8b3cf;
+  --text3: #6b7280;
   --accent: #6366f1;
   --accent2: #818cf8;
+  --accent3: #a5b4fc;
+  --accent-hover: #4f46e5;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
   --green: #22c55e;
   --red: #ef4444;
   --amber: #f59e0b;
   --orange: #f97316;
   --purple: #a78bfa;
-  --radius: 10px;
-  --radius-lg: 14px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --radius: 12px;
+  --radius-lg: 18px;
+  --shadow: 0 10px 40px rgba(0,0,0,0.6);
+  --shadow-sm: 0 4px 20px rgba(0,0,0,0.4);
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+[data-theme="light"] {
+  --bg: #ffffff;
+  --bg2: #f8fafc;
+  --bg3: #f1f5f9;
+  --bg4: #e2e8f0;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.12);
+  --border3: rgba(0,0,0,0.16);
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --accent3: #a5b4fc;
+  --accent-hover: #4f46e5;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --orange: #f97316;
+  --purple: #a78bfa;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --shadow: 0 10px 40px rgba(0,0,0,0.1);
+  --shadow-sm: 0 4px 20px rgba(0,0,0,0.08);
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 20px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+  background: var(--accent);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: var(--shadow);
 }
 
 html, body { height: 100%; }
@@ -30,10 +101,11 @@ body {
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .monospace {
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: 'SF Mono', 'Fira Code', 'Monaco', 'Menlo', 'Consolas', monospace;
 }
 
 #root { height: 100%; display: flex; flex-direction: column; }
@@ -43,9 +115,10 @@ button {
   border: none;
   font-family: inherit;
   font-size: 14px;
-  transition: all 0.15s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
 }
-button:active { transform: scale(0.97); }
+button:active { transform: scale(0.98); }
 
 input, textarea, select {
   font-family: inherit;
@@ -53,30 +126,36 @@ input, textarea, select {
   background: var(--bg3);
   color: var(--text);
   border: 1px solid var(--border2);
-  border-radius: 8px;
-  padding: 10px 14px;
+  border-radius: var(--radius);
+  padding: 12px 16px;
   outline: none;
   width: 100%;
-  transition: border-color 0.15s;
+  transition: all 0.2s ease;
 }
 input:focus, textarea:focus, select:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 textarea { resize: vertical; line-height: 1.6; }
 
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb { 
+  background: var(--border2); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--border3); }
 
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .section-heading {
@@ -85,12 +164,12 @@ textarea { resize: vertical; line-height: 1.6; }
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text3);
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .sidebar-nav-active {
-  border-left: 3px solid #7c3aed;
-  background: transparent;
+  border-left: 3px solid var(--accent);
+  background: var(--bg3);
   color: var(--accent2);
   font-weight: 600;
 }
@@ -104,16 +183,18 @@ textarea { resize: vertical; line-height: 1.6; }
 
 .tab-container {
   background: var(--bg2);
-  padding: 4px;
-  border-radius: 8px;
+  padding: 6px;
+  border-radius: var(--radius);
   display: flex;
-  gap: 4px;
+  gap: 6px;
+  border: 1px solid var(--border);
 }
 
 .tab-active {
-  background: white;
-  color: var(--bg);
+  background: var(--bg);
+  color: var(--text);
   font-weight: 600;
+  box-shadow: var(--shadow-sm);
 }
 
 .tab-inactive {
@@ -123,28 +204,46 @@ textarea { resize: vertical; line-height: 1.6; }
 }
 
 .primary-button {
-  background: #7c3aed;
+  background: var(--gradient-accent);
   color: white;
-  padding: 10px 24px;
-  border-radius: 10px;
+  padding: 12px 28px;
+  border-radius: var(--radius);
   font-weight: 600;
   font-size: 15px;
   border: none;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .primary-button:hover {
-  background: #6d28d9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
 }
 
 .primary-button:disabled {
   background: var(--bg3);
   color: var(--text2);
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--border2);
+  box-shadow: var(--shadow-sm);
 }
 
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 @keyframes spin { to{transform:rotate(360deg)} }
-@keyframes slideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }

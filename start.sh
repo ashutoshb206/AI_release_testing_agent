@@ -5,16 +5,35 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
 # ── Check API key ──────────────────────────────
-if [ -z "$ANTHROPIC_API_KEY" ]; then
+if [ -z "$MODEL_PROVIDER" ]; then
   if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
   fi
 fi
-if [ -z "$ANTHROPIC_API_KEY" ] || [ "$ANTHROPIC_API_KEY" = "your_key_here" ]; then
+
+# Check for appropriate API key based on provider
+if [ "$MODEL_PROVIDER" = "groq" ]; then
+  if [ -z "$GROQ_API_KEY" ] || [ "$GROQ_API_KEY" = "your_groq_api_key_here" ]; then
+    echo ""
+    echo "❌  GROQ_API_KEY not set."
+    echo "    Edit .env and set your key, or:"
+    echo "    export GROQ_API_KEY=gsk_..."
+    echo ""
+    exit 1
+  fi
+elif [ "$MODEL_PROVIDER" = "anthropic" ]; then
+  if [ -z "$ANTHROPIC_API_KEY" ] || [ "$ANTHROPIC_API_KEY" = "your_key_here" ]; then
+    echo ""
+    echo "❌  ANTHROPIC_API_KEY not set."
+    echo "    Edit .env and set your key, or:"
+    echo "    export ANTHROPIC_API_KEY=sk-ant-..."
+    echo ""
+    exit 1
+  fi
+else
   echo ""
-  echo "❌  ANTHROPIC_API_KEY not set."
-  echo "    Edit .env and set your key, or:"
-  echo "    export ANTHROPIC_API_KEY=sk-ant-..."
+  echo "❌  MODEL_PROVIDER not set or invalid."
+  echo "    Set MODEL_PROVIDER=groq or MODEL_PROVIDER=anthropic in .env"
   echo ""
   exit 1
 fi

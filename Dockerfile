@@ -12,27 +12,14 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     ca-certificates \
-    gpg \
-    apt-transport-https \
     && rm -rf /var/lib/apt/lists/*
-
-# Install Chromium using official method
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set Chrome path for Playwright
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers
-RUN playwright install chromium
-RUN playwright install-deps chromium
+# Install Playwright and Chromium
+RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0 playwright install chromium --force
 
 # Copy application code
 WORKDIR /app
@@ -47,7 +34,7 @@ USER app
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/api/config || exit 1
 
 # Start command

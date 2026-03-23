@@ -72,60 +72,67 @@ export default function StoryInput({ onSubmit, loading }) {
   }
 
   return (
-    <div style={{ maxWidth: 780, margin: '0 auto', padding: '40px 24px', animation: 'fadeIn 0.3s ease' }}>
+    <div style={{ maxWidth: 820, margin: '0 auto', animation: 'fadeIn 0.3s ease' }}>
       {/* Header */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+      <div style={{ marginBottom: 48 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
           <div style={{
-            width: 40, height: 40, borderRadius: 10,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            width: 56, height: 56, borderRadius: 'var(--radius-lg)',
+            background: 'var(--gradient-accent)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20,
+            fontSize: 24,
+            boxShadow: 'var(--shadow-sm)'
           }}>🤖</div>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#e8eaf0' }}>AI Release Testing Agent</h1>
-            <p style={{ fontSize: 13, color: 'var(--text2)', marginTop: 2 }}>
-              Autonomous test generation &amp; execution from user stories
+            <h1 style={{ fontSize: 32, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
+              Create Test Run
+            </h1>
+            <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.5 }}>
+              Generate autonomous tests from user stories using AI
             </p>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div style={{ marginBottom: 24 }}>
-        <div className="tab-container" style={{ marginBottom: 20 }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('manual')}
-            className={activeTab === 'manual' ? 'tab-active' : 'tab-inactive'}
-            style={{
-              flex: 1,
-              padding: '10px 16px',
-              borderRadius: 6,
-              fontSize: 13,
-              cursor: 'pointer',
-              transition: 'all 0.15s'
-            }}
-          >
-            📝 Manual Input
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('jira')}
-            className={activeTab === 'jira' ? 'tab-active' : 'tab-inactive'}
-            style={{
-              flex: 1,
-              padding: '10px 16px',
-              borderRadius: 6,
-              fontSize: 13,
-              cursor: 'pointer',
-              transition: 'all 0.15s'
-            }}
-          >
-            🔗 Fetch from Jira
-          </button>
+      {/* Main Card */}
+      <div className="card">
+        {/* Tabs */}
+        <div style={{ marginBottom: 32 }}>
+          <div className="tab-container" style={{ marginBottom: 24 }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab('manual')}
+              className={activeTab === 'manual' ? 'tab-active' : 'tab-inactive'}
+              style={{
+                flex: 1,
+                padding: '12px 20px',
+                borderRadius: 'var(--radius)',
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              📝 Manual Input
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('jira')}
+              className={activeTab === 'jira' ? 'tab-active' : 'tab-inactive'}
+              style={{
+                flex: 1,
+                padding: '12px 20px',
+                borderRadius: 'var(--radius)',
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              🔗 Fetch from Jira
+            </button>
+          </div>
         </div>
-      </div>
 
       <form onSubmit={handleSubmit}>
         {activeTab === 'manual' ? (
@@ -249,7 +256,7 @@ export default function StoryInput({ onSubmit, loading }) {
 
         {/* Submit buttons - only show on manual tab */}
         {activeTab === 'manual' && (
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 32 }}>
             <button
               type="submit"
               disabled={loading}
@@ -257,7 +264,7 @@ export default function StoryInput({ onSubmit, loading }) {
             >
               {loading ? (
                 <>
-                  <span style={{ width: 16, height: 16, border: '2px solid var(--text3)', borderTopColor: 'var(--accent)', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />
+                  <span style={{ width: 16, height: 16, border: '2px solid var(--text3)', borderTopColor: 'white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite', marginRight: 8 }} />
                   Generating &amp; running tests...
                 </>
               ) : (
@@ -269,12 +276,13 @@ export default function StoryInput({ onSubmit, loading }) {
               type="button"
               onClick={loadDemo}
               style={{
-                background: 'transparent',
+                background: 'var(--bg3)',
                 color: 'var(--text2)',
                 border: '1px solid var(--border2)',
                 padding: '12px 20px',
-                borderRadius: 10,
+                borderRadius: 'var(--radius)',
                 fontWeight: 500,
+                transition: 'all 0.2s ease'
               }}
             >
               ✨ Load Demo
@@ -282,23 +290,23 @@ export default function StoryInput({ onSubmit, loading }) {
           </div>
         )}
       </form>
+      </div>
 
       {/* Info cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginTop: 40 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginTop: 32 }}>
         {[
           { icon: '🧠', title: 'AI-Generated Tests', desc: 'Claude Sonnet creates functional, edge case, negative & regression tests' },
           { icon: '▶️', title: 'Live Execution', desc: 'Playwright runs tests in a real browser, capturing screenshots as evidence' },
           { icon: '📊', title: 'Risk Intelligence', desc: 'Weighted risk score with regression detection and release recommendation' },
         ].map(({ icon, title, desc }) => (
-          <div key={title} style={{
-            background: 'var(--bg2)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius)',
-            padding: '16px 18px',
+          <div key={title} className="card" style={{
+            padding: '20px',
+            textAlign: 'center',
+            transition: 'all 0.2s ease'
           }}>
-            <div style={{ fontSize: 22, marginBottom: 8 }}>{icon}</div>
-            <div style={{ fontWeight: 600, marginBottom: 4, fontSize: 13 }}>{title}</div>
-            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{desc}</div>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>{icon}</div>
+            <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 14, color: 'var(--text)' }}>{title}</div>
+            <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.5 }}>{desc}</div>
           </div>
         ))}
       </div>

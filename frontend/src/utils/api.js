@@ -73,3 +73,9 @@ export function streamRun(runId, onResult, onComplete, onError) {
 
   return () => es.close()
 }
+
+export async function getConfig() {
+  const r = await fetch(`${BASE}/config`)
+  if (!r.ok) throw new Error(await r.text())
+  return r.json()
+}
