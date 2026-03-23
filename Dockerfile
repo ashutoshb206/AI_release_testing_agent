@@ -5,31 +5,23 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies for Playwright
+# Install system dependencies for Playwright (minimal)
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
     gnupg \
     unzip \
-    libxss1 \
-    libxrandr2 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libgtk-3-0 \
-    libgdk-pixbuf-xlib-2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r /app/requirements.txt
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Playwright and Chromium
-RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0 playwright install chromium --force
+RUN playwright install chromium --force
 
 # Copy application code
-WORKDIR /app
 COPY . .
 
 # Create non-root user for security
@@ -40,10 +32,9 @@ USER app
 # Expose port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+# Health check (simplified)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8000/api/config || exit 1
 
-# Start command from backend directory
-WORKDIR /app/backend
-CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start command
+CMD ["python3", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
