@@ -22,8 +22,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Install Playwright and Chromium
 RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0 playwright install chromium --force
@@ -44,6 +44,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/api/config || exit 1
 
-# Start command
+# Start command from backend directory
 WORKDIR /app/backend
 CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
