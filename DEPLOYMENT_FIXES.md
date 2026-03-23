@@ -6,16 +6,31 @@
 - **Fixed Dockerfile.playwright**: Added proper working directory and browser installation
 - **Updated main Dockerfile**: Improved system dependencies and health checks
 - **Enhanced health checks**: Increased start period to 30s for proper initialization
+- **Fixed working directory**: Set WORKDIR to /app/backend for correct module import
 
 ### 2. Nixpacks Configuration
 - **Updated nixpacks.toml**: Added `--with-deps` flag for Playwright
 - **Simplified dependencies**: Removed problematic packages
 - **Better build commands**: More reliable installation process
+- **Fixed start command**: Added `cd backend` for correct module path
 
 ### 3. Railway Configuration
 - **Switched back to Nixpacks**: More reliable than Docker for this use case
 - **Updated railway.toml**: Simplified configuration
 - **Proper health check path**: `/api/config` endpoint
+
+## Critical Fix: Module Import Error
+
+**Problem**: `Error loading ASGI app. Could not import module "main"`
+
+**Root Cause**: Railway was trying to import `main.py` from wrong directory
+- `main.py` is located in `backend/` directory
+- Previous config tried to run from root directory
+
+**Solution**: Updated all deployment configs to use correct working directory:
+- **Nixpacks**: `cd backend && python3 -m uvicorn main:app`
+- **Docker**: `WORKDIR /app/backend` before CMD
+- **Dockerfile.playwright**: `WORKDIR /app/backend` before CMD
 
 ## Deployment Strategy
 
