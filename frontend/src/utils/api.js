@@ -1,4 +1,5 @@
-const BASE = '/api'
+const BASE = import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? 'https://ai-release-testing-agent.vercel.app/api' : '/api')
 
 export async function createRun(payload) {
   const r = await fetch(`${BASE}/runs`, {
