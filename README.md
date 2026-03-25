@@ -24,7 +24,7 @@ echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
 ./start.sh
 ```
 
-Open **http://localhost:8000** in your browser.
+Open **https://ai-release-testing-agent.vercel.app** in your browser.
 
 ---
 
