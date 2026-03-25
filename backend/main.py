@@ -274,6 +274,13 @@ def get_config():
 
 
 # ──────────────────────────────────────────────
+# Vercel Serverless Handler
+# ──────────────────────────────────────────────
+
+# Vercel serverless function handler
+handler = app
+
+# ──────────────────────────────────────────────
 # Serve React frontend (production build)
 # ──────────────────────────────────────────────
 

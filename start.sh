@@ -59,7 +59,7 @@ fi
 # ── Launch ─────────────────────────────────────
 echo ""
 echo "✅  Starting AI Release Testing Agent"
-echo "    URL: https://ai-release-testing-agent.vercel.app"
+echo "    URL: https://ai-release-testing-agent.vercel.app/"
 echo ""
 cd backend
 exec uvicorn main:app --host 0.0.0.0 --port 8000 --reload

@@ -34,7 +34,7 @@ EXPOSE 8000
 
 # Health check (simplified)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f https://ai-release-testing-agent.vercel.app/api/config || exit 1
+    CMD curl -f https://ai-release-testing-agent.vercel.app//api/config || exit 1
 
 # Start command
 CMD ["python3", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

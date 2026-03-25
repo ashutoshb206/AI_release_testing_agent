@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'https://ai-release-testing-agent.vercel.app',
+      '/api': 'https://ai-release-testing-agent.vercel.app/',
     },
   },
 })
