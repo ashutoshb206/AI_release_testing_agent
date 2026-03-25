@@ -4,6 +4,13 @@
     {
       "src": "api/minimal.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
@@ -12,8 +19,11 @@
       "dest": "api/minimal.py"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "api/minimal.py"
+      "dest": "/index.html"
     }
   ],
   "env": {

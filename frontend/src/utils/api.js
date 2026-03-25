@@ -1,4 +1,4 @@
-const BASE = 'https://ai-release-testing-agent.vercel.app/api'
+const BASE = '/api'
 
 export async function createRun(payload) {
   const r = await fetch(`${BASE}/runs`, {
