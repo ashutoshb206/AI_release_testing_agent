@@ -20,19 +20,69 @@ from executor import execute_test_run
 from risk import calculate_risk_score
 from report import generate_html_report
 
-app = FastAPI(title="AI Release Testing Agent", version="1.0.0")
+_fastapi_app = FastAPI(title="AI Release Testing Agent", version="1.0.0")
 
-app.add_middleware(
+# Use allow_origins=["*"] without allow_credentials=True.
+# Combining "*" with allow_credentials=True is invalid per the CORS spec
+# and causes browsers to reject responses with:
+#   "No 'Access-Control-Allow-Origin' header is present"
+_fastapi_app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://ai-release-testing-agent-frontend.vercel.app",
-        "https://ai-release-testing-agent.vercel.app",
-        "*"
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+class _OuterCORSMiddleware:
+    """Outermost ASGI wrapper that guarantees CORS headers on every response.
+
+    Starlette's ``ServerErrorMiddleware`` (always the outermost built-in
+    middleware) sends 500 error responses directly to the raw ``send``
+    callback, bypassing all user-added middlewares including
+    ``CORSMiddleware``.  Wrapping the FastAPI app here ensures that even
+    those infrastructure-level 500 responses carry an
+    ``Access-Control-Allow-Origin`` header so browsers don't suppress them
+    with a CORS error.
+    """
+
+    def __init__(self, inner):
+        self._inner = inner
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self._inner(scope, receive, send)
+            return
+
+        origin: bytes | None = None
+        for name, value in scope.get("headers", []):
+            if name.lower() == b"origin":
+                origin = value
+                break
+
+        if origin is None:
+            await self._inner(scope, receive, send)
+            return
+
+        async def send_with_cors(message):
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                has_acao = any(
+                    k.lower() == b"access-control-allow-origin"
+                    for k, _ in headers
+                )
+                if not has_acao:
+                    headers.append((b"access-control-allow-origin", b"*"))
+                    message = dict(message)
+                    message["headers"] = headers
+            await send(message)
+
+        await self._inner(scope, receive, send_with_cors)
+
+
+# Expose the wrapped app as 'app' so uvicorn and Railway pick it up correctly.
+app = _OuterCORSMiddleware(_fastapi_app)
 
 # ──────────────────────────────────────────────
 # Models
@@ -56,7 +106,7 @@ class JiraFetchRequest(BaseModel):
 # Initialize database on import (for Vercel serverless)
 init_db()
 
-@app.on_event("startup")
+@_fastapi_app.on_event("startup")
 def startup():
     # Database already initialized above
     pass
@@ -66,7 +116,7 @@ def startup():
 # API Routes
 # ──────────────────────────────────────────────
 
-@app.post("/api/runs")
+@_fastapi_app.post("/api/runs")
 async def create_run(req: RunRequest, background_tasks: BackgroundTasks):
     """Create a new test run and start execution in the background."""
     run_id = str(uuid.uuid4())
@@ -84,7 +134,7 @@ async def create_run(req: RunRequest, background_tasks: BackgroundTasks):
     return {"run_id": run_id}
 
 
-@app.get("/api/runs/{run_id}/stream")
+@_fastapi_app.get("/api/runs/{run_id}/stream")
 async def stream_run(run_id: str):
     """Server-Sent Events: push live test results as they come in."""
     async def event_gen():
@@ -142,7 +192,7 @@ async def stream_run(run_id: str):
     )
 
 
-@app.get("/api/runs")
+@_fastapi_app.get("/api/runs")
 def list_runs():
     db = get_db()
     rows = db.execute(
@@ -154,7 +204,7 @@ def list_runs():
     return [dict(r) for r in rows]
 
 
-@app.get("/api/runs/{run_id}")
+@_fastapi_app.get("/api/runs/{run_id}")
 def get_run(run_id: str):
     db = get_db()
     run = db.execute("SELECT * FROM test_runs WHERE id = ?", (run_id,)).fetchone()
@@ -171,7 +221,7 @@ def get_run(run_id: str):
     }
 
 
-@app.get("/api/runs/{run_id}/report", response_class=HTMLResponse)
+@_fastapi_app.get("/api/runs/{run_id}/report", response_class=HTMLResponse)
 def get_report(run_id: str):
     db = get_db()
     run = db.execute("SELECT * FROM test_runs WHERE id = ?", (run_id,)).fetchone()
@@ -184,7 +234,7 @@ def get_report(run_id: str):
     return generate_html_report(dict(run), [dict(r) for r in results])
 
 
-@app.delete("/api/runs/{run_id}")
+@_fastapi_app.delete("/api/runs/{run_id}")
 def delete_run(run_id: str):
     db = get_db()
     db.execute("DELETE FROM test_results WHERE run_id = ?", (run_id,))
@@ -194,7 +244,7 @@ def delete_run(run_id: str):
     return {"deleted": True}
 
 
-@app.post("/api/jira/fetch")
+@_fastapi_app.post("/api/jira/fetch")
 def fetch_jira_ticket(req: JiraFetchRequest):
     """Fetch ticket data from Jira API or return mock data if no token."""
     jira_token = os.getenv("JIRA_TOKEN")
@@ -233,7 +283,7 @@ def fetch_jira_ticket(req: JiraFetchRequest):
     }
 
 
-@app.get("/api/defect-memory")
+@_fastapi_app.get("/api/defect-memory")
 def get_defect_memory():
     """Get test cases that have failed multiple times across different runs."""
     db = get_db()
@@ -255,7 +305,7 @@ def get_defect_memory():
     return [dict(row) for row in rows]
 
 
-@app.get("/api/config")
+@_fastapi_app.get("/api/config")
 def get_config():
     """Get current LLM provider and model configuration."""
     provider = os.getenv("MODEL_PROVIDER", "groq")
@@ -295,9 +345,9 @@ handler = app
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
 if os.path.isdir(STATIC_DIR):
-    app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="assets")
+    _fastapi_app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="assets")
 
-    @app.get("/{full_path:path}")
+    @_fastapi_app.get("/{full_path:path}")
     def serve_spa(full_path: str):
         index = os.path.join(STATIC_DIR, "index.html")
         with open(index) as f:
