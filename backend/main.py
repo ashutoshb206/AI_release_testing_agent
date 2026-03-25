@@ -48,9 +48,13 @@ class JiraFetchRequest(BaseModel):
 # Startup
 # ──────────────────────────────────────────────
 
+# Initialize database on import (for Vercel serverless)
+init_db()
+
 @app.on_event("startup")
 def startup():
-    init_db()
+    # Database already initialized above
+    pass
 
 
 # ──────────────────────────────────────────────
