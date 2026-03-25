@@ -1,16 +1,12 @@
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
-try:
-    from main import app
-    print("Successfully imported FastAPI app")
-except Exception as e:
-    print(f"Error importing app: {e}")
-    raise
+# Add backend to path
+backend_path = os.path.join(os.path.dirname(__file__), '..', 'backend')
+sys.path.insert(0, backend_path)
 
-# Vercel serverless function handler
-handler = app
+# Import the FastAPI app
+from main import app
 
-# Export for Vercel
-app = handler
+# Vercel will automatically use the 'app' variable
+# No special handler needed for @vercel/python
