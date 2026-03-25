@@ -24,8 +24,13 @@ app = FastAPI(title="AI Release Testing Agent", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=[
+        "https://ai-release-testing-agent-frontend.vercel.app",
+        "https://ai-release-testing-agent.vercel.app",
+        "*"
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
