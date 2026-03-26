@@ -1,20 +1,27 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0a0a0b;
-  --bg2: #111114;
-  --bg3: #1a1a1f;
-  --bg4: #25252b;
-  --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --border3: rgba(255,255,255,0.18);
-  --text: #ffffff;
-  --text2: #a8b3cf;
-  --text3: #6b7280;
-  --accent: #6366f1;
-  --accent2: #818cf8;
-  --accent3: #a5b4fc;
-  --accent-hover: #4f46e5;
+  /* Backgrounds */
+  --bg: #0d0d10;
+  --bg2: #13131a;
+  --bg3: #1c1c24;
+  --bg4: #26262f;
+  /* Borders */
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.20);
+  /* Text */
+  --text: #f0f0f5;
+  --text2: #9aa0b4;
+  --text3: #5c6478;
+  /* Accent / Primary */
+  --accent: #5b5ef7;
+  --accent2: #7577f9;
+  --accent3: #a5a8fc;
+  --accent-hover: #4a4de0;
+  --accent-bg: rgba(91,94,247,0.10);
+  --accent-bg2: rgba(91,94,247,0.18);
+  /* Semantic */
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
@@ -24,74 +31,90 @@
   --amber: #f59e0b;
   --orange: #f97316;
   --purple: #a78bfa;
-  --radius: 12px;
-  --radius-lg: 18px;
-  --shadow: 0 10px 40px rgba(0,0,0,0.6);
-  --shadow-sm: 0 4px 20px rgba(0,0,0,0.4);
-  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  /* Geometry */
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  /* Shadows */
+  --shadow: 0 8px 32px rgba(0,0,0,0.48);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.32);
+  --shadow-xs: 0 1px 4px rgba(0,0,0,0.24);
+  /* Spacing scale (8px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  /* Legacy gradient kept for SVG/gauge usage only */
+  --gradient-accent: linear-gradient(135deg, #5b5ef7 0%, #7577f9 100%);
 }
 
 [data-theme="light"] {
-  --bg: #ffffff;
-  --bg2: #f8fafc;
-  --bg3: #f1f5f9;
-  --bg4: #e2e8f0;
-  --border: rgba(0,0,0,0.08);
+  --bg: #f9fafb;
+  --bg2: #ffffff;
+  --bg3: #f1f4f8;
+  --bg4: #e4e9f0;
+  --border: rgba(0,0,0,0.07);
   --border2: rgba(0,0,0,0.12);
-  --border3: rgba(0,0,0,0.16);
-  --text: #0f172a;
-  --text2: #475569;
-  --text3: #94a3b8;
-  --accent: #6366f1;
-  --accent2: #818cf8;
-  --accent3: #a5b4fc;
-  --accent-hover: #4f46e5;
+  --border3: rgba(0,0,0,0.18);
+  --text: #111827;
+  --text2: #4b5563;
+  --text3: #9ca3af;
+  --accent: #5b5ef7;
+  --accent2: #7577f9;
+  --accent3: #a5a8fc;
+  --accent-hover: #4a4de0;
+  --accent-bg: rgba(91,94,247,0.07);
+  --accent-bg2: rgba(91,94,247,0.13);
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
   --info: #3b82f6;
-  --green: #22c55e;
-  --red: #ef4444;
-  --amber: #f59e0b;
-  --orange: #f97316;
-  --purple: #a78bfa;
-  --radius: 12px;
-  --radius-lg: 18px;
-  --shadow: 0 10px 40px rgba(0,0,0,0.1);
-  --shadow-sm: 0 4px 20px rgba(0,0,0,0.08);
-  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --green: #16a34a;
+  --red: #dc2626;
+  --amber: #d97706;
+  --orange: #ea580c;
+  --purple: #7c3aed;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.10);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-xs: 0 1px 4px rgba(0,0,0,0.05);
+  --gradient-accent: linear-gradient(135deg, #5b5ef7 0%, #7577f9 100%);
 }
 
-/* Theme Toggle Button */
+/* ── Theme Toggle ─────────────────────────── */
 .theme-toggle {
   position: fixed;
-  top: 24px;
-  right: 24px;
+  top: 20px;
+  right: 20px;
   z-index: 1000;
   background: var(--bg3);
   border: 1px solid var(--border2);
-  border-radius: 12px;
-  width: 48px;
-  height: 48px;
+  border-radius: var(--radius);
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 20px;
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(10px);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 16px;
+  box-shadow: var(--shadow-xs);
 }
 
 .theme-toggle:hover {
-  background: var(--accent);
-  color: white;
-  transform: scale(1.05);
-  box-shadow: var(--shadow);
+  background: var(--bg4);
+  border-color: var(--border3);
+  box-shadow: var(--shadow-sm);
 }
 
+/* ── Base ─────────────────────────────────── */
 html, body { height: 100%; }
 
 body {
@@ -101,7 +124,7 @@ body {
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .monospace {
@@ -110,16 +133,20 @@ body {
 
 #root { height: 100%; display: flex; flex-direction: column; }
 
+/* ── Buttons ──────────────────────────────── */
 button {
   cursor: pointer;
   border: none;
   font-family: inherit;
   font-size: 14px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.15s ease, color 0.15s ease,
+              border-color 0.15s ease, box-shadow 0.15s ease,
+              opacity 0.15s ease;
   font-weight: 500;
 }
-button:active { transform: scale(0.98); }
+button:active:not(:disabled) { opacity: 0.85; }
 
+/* ── Inputs ───────────────────────────────── */
 input, textarea, select {
   font-family: inherit;
   font-size: 14px;
@@ -127,49 +154,56 @@ input, textarea, select {
   color: var(--text);
   border: 1px solid var(--border2);
   border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 10px 14px;
   outline: none;
   width: 100%;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+input::placeholder, textarea::placeholder { color: var(--text3); }
+input:hover, textarea:hover, select:hover {
+  border-color: var(--border3);
 }
 input:focus, textarea:focus, select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(91,94,247,0.15);
 }
 textarea { resize: vertical; line-height: 1.6; }
 
-::-webkit-scrollbar { width: 8px; }
+/* ── Scrollbar ────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { 
-  background: var(--border2); 
-  border-radius: 4px;
+::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--border3); }
 
+/* ── Badges ───────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 6px;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 4px;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
+/* ── Section heading ──────────────────────── */
 .section-heading {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.10em;
   color: var(--text3);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
+/* ── Sidebar nav states ───────────────────── */
 .sidebar-nav-active {
-  border-left: 3px solid var(--accent);
-  background: var(--bg3);
+  background: var(--accent-bg2);
   color: var(--accent2);
   font-weight: 600;
 }
@@ -178,23 +212,23 @@ textarea { resize: vertical; line-height: 1.6; }
   background: transparent;
   color: var(--text2);
   font-weight: 400;
-  border: none;
 }
 
+/* ── Tabs ─────────────────────────────────── */
 .tab-container {
-  background: var(--bg2);
-  padding: 6px;
+  background: var(--bg3);
+  padding: 4px;
   border-radius: var(--radius);
   display: flex;
-  gap: 6px;
+  gap: 4px;
   border: 1px solid var(--border);
 }
 
 .tab-active {
-  background: var(--bg);
+  background: var(--bg2);
   color: var(--text);
   font-weight: 600;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
 .tab-inactive {
@@ -202,48 +236,58 @@ textarea { resize: vertical; line-height: 1.6; }
   color: var(--text2);
   font-weight: 400;
 }
-
-.primary-button {
-  background: var(--gradient-accent);
-  color: white;
-  padding: 12px 28px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
+.tab-inactive:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.04);
 }
 
-.primary-button:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+/* ── Primary button ───────────────────────── */
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: white;
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 0 transparent;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 2px 8px rgba(91,94,247,0.40);
 }
 
 .primary-button:disabled {
   background: var(--bg3);
-  color: var(--text2);
+  color: var(--text3);
   cursor: not-allowed;
-  transform: none;
   box-shadow: none;
 }
 
+/* ── Card ─────────────────────────────────── */
 .card {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card:hover {
   border-color: var(--border2);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
+/* ── Animations ───────────────────────────── */
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 @keyframes spin { to{transform:rotate(360deg)} }
-@keyframes slideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }

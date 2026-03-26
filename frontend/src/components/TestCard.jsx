@@ -30,27 +30,31 @@ export default function TestCard({ result, isNew = false }) {
     <div style={{
       background: 'var(--bg2)',
       border: `1px solid var(--border)`,
-      borderTop: `1px solid ${isReg ? 'rgba(239,68,68,0.4)' : passed ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.3)'}`,
-      borderRadius: 'var(--radius)',
+      borderLeft: `3px solid ${isReg ? '#ef4444' : passed ? '#22c55e' : '#ef4444'}`,
+      borderRadius: 'var(--radius-lg)',
       overflow: 'hidden',
-      animation: isNew ? 'slideIn 0.3s ease' : 'none',
+      animation: isNew ? 'slideIn 0.25s ease' : 'none',
+      transition: 'border-color 0.15s ease',
     }}>
       {/* Header row */}
       <div
         onClick={() => setOpen(o => !o)}
         style={{
           display: 'flex', alignItems: 'center', gap: 12,
-          padding: '14px 18px', cursor: 'pointer',
-          background: passed ? 'rgba(34,197,94,0.04)' : 'rgba(239,68,68,0.06)',
+          padding: '12px 16px', cursor: 'pointer',
+          background: 'transparent',
           borderBottom: open ? '1px solid var(--border)' : 'none',
+          transition: 'background 0.15s ease',
         }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
       >
         {/* Status icon */}
         <div style={{
-          width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+          width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
           background: passed ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14,
+          fontSize: 12, color: passed ? '#22c55e' : '#ef4444', fontWeight: 700,
         }}>
           {passed ? '✓' : '✕'}
         </div>
@@ -58,7 +62,7 @@ export default function TestCard({ result, isNew = false }) {
         {/* Title & badges */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 600, fontSize: 14, color: passed ? '#4ade80' : '#f87171' }}>
+            <span style={{ fontWeight: 600, fontSize: 14, color: passed ? '#22c55e' : '#ef4444' }}>
               {result.test_name}
             </span>
             {isReg && (
