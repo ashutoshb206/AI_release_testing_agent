@@ -72,66 +72,49 @@ export default function StoryInput({ onSubmit, loading }) {
   }
 
   return (
-    <div style={{ maxWidth: 820, margin: '0 auto', animation: 'fadeIn 0.3s ease' }}>
+    <div style={{ maxWidth: 760, margin: '0 auto', animation: 'fadeIn 0.25s ease' }}>
       {/* Header */}
-      <div style={{ marginBottom: 48 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 'var(--radius-lg)',
-            background: 'var(--gradient-accent)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24,
-            boxShadow: 'var(--shadow-sm)'
-          }}>🤖</div>
-          <div>
-            <h1 style={{ fontSize: 32, fontWeight: 800, color: 'var(--text)', marginBottom: 4 }}>
-              Create Test Run
-            </h1>
-            <p style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.5 }}>
-              Generate autonomous tests from user stories using AI
-            </p>
-          </div>
-        </div>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', marginBottom: 6, letterSpacing: '-0.02em' }}>
+          Create Test Run
+        </h1>
+        <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.5 }}>
+          Generate autonomous tests from user stories using AI
+        </p>
       </div>
 
       {/* Main Card */}
-      <div className="card">
+      <div className="card" style={{ padding: 28 }}>
         {/* Tabs */}
-        <div style={{ marginBottom: 32 }}>
-          <div className="tab-container" style={{ marginBottom: 24 }}>
-            <button
-              type="button"
-              onClick={() => setActiveTab('manual')}
-              className={activeTab === 'manual' ? 'tab-active' : 'tab-inactive'}
-              style={{
-                flex: 1,
-                padding: '12px 20px',
-                borderRadius: 'var(--radius)',
-                fontSize: 14,
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              📝 Manual Input
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('jira')}
-              className={activeTab === 'jira' ? 'tab-active' : 'tab-inactive'}
-              style={{
-                flex: 1,
-                padding: '12px 20px',
-                borderRadius: 'var(--radius)',
-                fontSize: 14,
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              🔗 Fetch from Jira
-            </button>
-          </div>
+        <div className="tab-container" style={{ marginBottom: 28 }}>
+          <button
+            type="button"
+            onClick={() => setActiveTab('manual')}
+            className={activeTab === 'manual' ? 'tab-active' : 'tab-inactive'}
+            style={{
+              flex: 1,
+              padding: '8px 16px',
+              borderRadius: 6,
+              fontSize: 13,
+              cursor: 'pointer',
+            }}
+          >
+            📝 Manual Input
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('jira')}
+            className={activeTab === 'jira' ? 'tab-active' : 'tab-inactive'}
+            style={{
+              flex: 1,
+              padding: '8px 16px',
+              borderRadius: 6,
+              fontSize: 13,
+              cursor: 'pointer',
+            }}
+          >
+            🔗 Fetch from Jira
+          </button>
         </div>
 
       <form onSubmit={handleSubmit}>
@@ -164,7 +147,7 @@ export default function StoryInput({ onSubmit, loading }) {
             <div style={{ marginBottom: 28 }}>
               <label style={labelStyle}>
                 Acceptance Criteria
-                <span style={{ color: 'var(--text3)', fontWeight: 400, marginLeft: 6 }}>(optional but recommended)</span>
+                <span style={{ color: 'var(--text3)', fontWeight: 400, marginLeft: 6, fontSize: 12 }}>(optional but recommended)</span>
               </label>
               <textarea
                 rows={6}
@@ -179,15 +162,18 @@ export default function StoryInput({ onSubmit, loading }) {
             {/* Jira Demo Mode Banner */}
             {jiraDemoMode && (
               <div style={{
-                background: 'rgba(245,158,11,0.1)',
-                border: '1px solid rgba(245,158,11,0.3)',
-                borderRadius: 8,
-                padding: '12px 16px',
+                background: 'rgba(245,158,11,0.08)',
+                border: '1px solid rgba(245,158,11,0.25)',
+                borderRadius: 'var(--radius)',
+                padding: '10px 14px',
                 marginBottom: 20,
                 fontSize: 13,
-                color: '#fcd34d'
+                color: 'var(--amber)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
               }}>
-                ⚠️ Demo mode — no Jira token configured
+                <span>⚠️</span> Demo mode — no Jira token configured
               </div>
             )}
 
@@ -222,28 +208,16 @@ export default function StoryInput({ onSubmit, loading }) {
             </div>
 
             {/* Fetch Button */}
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 8 }}>
               <button
                 type="button"
                 onClick={fetchJiraTicket}
                 disabled={jiraLoading}
-                style={{
-                  background: jiraLoading ? 'var(--bg3)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                  color: jiraLoading ? 'var(--text2)' : '#fff',
-                  padding: '12px 28px',
-                  borderRadius: 10,
-                  fontWeight: 600,
-                  fontSize: 15,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  border: jiraLoading ? '1px solid var(--border2)' : 'none',
-                  cursor: jiraLoading ? 'not-allowed' : 'pointer'
-                }}
+                className="primary-button"
               >
                 {jiraLoading ? (
                   <>
-                    <span style={{ width: 16, height: 16, border: '2px solid var(--text3)', borderTopColor: 'var(--accent)', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />
+                    <span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />
                     Fetching...
                   </>
                 ) : (
@@ -256,15 +230,16 @@ export default function StoryInput({ onSubmit, loading }) {
 
         {/* Submit buttons - only show on manual tab */}
         {activeTab === 'manual' && (
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 32 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: 24 }}>
             <button
               type="submit"
               disabled={loading}
               className="primary-button"
+              style={{ minWidth: 200 }}
             >
               {loading ? (
                 <>
-                  <span style={{ width: 16, height: 16, border: '2px solid var(--text3)', borderTopColor: 'white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite', marginRight: 8 }} />
+                  <span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />
                   Generating &amp; running tests...
                 </>
               ) : (
@@ -276,14 +251,16 @@ export default function StoryInput({ onSubmit, loading }) {
               type="button"
               onClick={loadDemo}
               style={{
-                background: 'var(--bg3)',
+                background: 'transparent',
                 color: 'var(--text2)',
                 border: '1px solid var(--border2)',
-                padding: '12px 20px',
+                padding: '10px 16px',
                 borderRadius: 'var(--radius)',
                 fontWeight: 500,
-                transition: 'all 0.2s ease'
+                fontSize: 13,
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg3)'; e.currentTarget.style.borderColor = 'var(--border3)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border2)' }}
             >
               ✨ Load Demo
             </button>
@@ -293,20 +270,16 @@ export default function StoryInput({ onSubmit, loading }) {
       </div>
 
       {/* Info cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginTop: 32 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginTop: 24 }}>
         {[
-          { icon: '🧠', title: 'AI-Generated Tests', desc: 'Claude Sonnet creates functional, edge case, negative & regression tests' },
-          { icon: '▶️', title: 'Live Execution', desc: 'Playwright runs tests in a real browser, capturing screenshots as evidence' },
+          { icon: '🧠', title: 'AI-Generated Tests', desc: 'Creates functional, edge case, negative & regression tests' },
+          { icon: '▶️', title: 'Live Execution', desc: 'Playwright runs tests in a real browser with screenshot evidence' },
           { icon: '📊', title: 'Risk Intelligence', desc: 'Weighted risk score with regression detection and release recommendation' },
         ].map(({ icon, title, desc }) => (
-          <div key={title} className="card" style={{
-            padding: '20px',
-            textAlign: 'center',
-            transition: 'all 0.2s ease'
-          }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>{icon}</div>
-            <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 14, color: 'var(--text)' }}>{title}</div>
-            <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.5 }}>{desc}</div>
+          <div key={title} className="card" style={{ padding: '20px 16px' }}>
+            <div style={{ fontSize: 24, marginBottom: 10 }}>{icon}</div>
+            <div style={{ fontWeight: 600, marginBottom: 6, fontSize: 13, color: 'var(--text)' }}>{title}</div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>{desc}</div>
           </div>
         ))}
       </div>
@@ -316,8 +289,9 @@ export default function StoryInput({ onSubmit, loading }) {
 
 const labelStyle = {
   display: 'block',
-  marginBottom: 8,
+  marginBottom: 6,
   fontSize: 13,
   fontWeight: 600,
   color: 'var(--text2)',
+  letterSpacing: '0.01em',
 }

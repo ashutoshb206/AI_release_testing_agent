@@ -19,12 +19,12 @@ export default function Architecture() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <div style={{
             width: 40, height: 40, borderRadius: 10,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: 'var(--accent)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 20,
           }}>🏗</div>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: '#e8eaf0' }}>System Architecture</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>System Architecture</h1>
             <p style={{ fontSize: 13, color: 'var(--text2)', marginTop: 2 }}>
               Understanding the AI Release Testing Agent's design and integration capabilities
             </p>

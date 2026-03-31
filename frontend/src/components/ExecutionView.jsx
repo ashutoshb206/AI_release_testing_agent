@@ -187,10 +187,10 @@ export default function ExecutionView({ runId, onReset }) {
       {/* Progress bar */}
       {isRunning && runMeta?.total_tests > 0 && (
         <div style={{
-          background: 'var(--bg3)', borderRadius: 99, height: 4, marginBottom: 24, overflow: 'hidden',
+          background: 'var(--bg3)', borderRadius: 99, height: 3, marginBottom: 24, overflow: 'hidden',
         }}>
           <div style={{
-            height: '100%', background: 'linear-gradient(90deg, var(--accent), var(--purple))',
+            height: '100%', background: 'var(--accent)',
             borderRadius: 99, width: `${(total / runMeta.total_tests) * 100}%`,
             transition: 'width 0.4s ease',
           }} />

@@ -58,48 +58,46 @@ export default function RunDetail({ runId, onBack }) {
   ]
 
   return (
-    <div style={{ maxWidth: 940, margin: '0 auto', padding: '32px 24px', animation: 'fadeIn 0.25s ease' }}>
+    <div style={{ maxWidth: 940, margin: '0 auto', animation: 'fadeIn 0.25s ease' }}>
       {/* Top bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             onClick={onBack}
             style={{
-              background: 'var(--bg3)', color: 'var(--text2)',
-              border: '1px solid var(--border2)', borderRadius: 8,
+              background: 'transparent', color: 'var(--text2)',
+              border: '1px solid var(--border2)', borderRadius: 'var(--radius)',
               padding: '7px 14px', fontSize: 13, fontWeight: 500,
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg3)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >← Back</button>
-          <h2 style={{ fontSize: 17, fontWeight: 700 }}>Run Detail</h2>
-          <code style={{ fontSize: 11, color: 'var(--text3)' }}>{runId.slice(0, 8)}</code>
+          <h2 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.01em' }}>Run Detail</h2>
+          <code style={{ fontSize: 11, color: 'var(--text3)', background: 'var(--bg3)', padding: '2px 8px', borderRadius: 4 }}>{runId.slice(0, 8)}</code>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={() => openReport(runId)}
             style={{
-              background: 'var(--bg3)', color: 'var(--text2)',
-              border: '1px solid var(--border2)', borderRadius: 8,
+              background: 'transparent', color: 'var(--text2)',
+              border: '1px solid var(--border2)', borderRadius: 'var(--radius)',
               padding: '8px 16px', fontSize: 13, fontWeight: 500,
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg3)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >📄 View Report</button>
           <button
             onClick={handleDownloadReport}
             disabled={downloading}
-            style={{
-              background: downloading ? 'var(--bg3)' : 'var(--accent)', 
-              color: downloading ? 'var(--text2)' : 'white',
-              border: '1px solid var(--border2)', borderRadius: 8,
-              padding: '8px 16px', fontSize: 13, fontWeight: 500,
-              cursor: downloading ? 'not-allowed' : 'pointer',
-            }}
+            className="primary-button"
+            style={{ padding: '8px 16px', fontSize: 13, minWidth: 110 }}
           >
             {downloading ? (
               <>
                 <span style={{ 
-                  width: 12, height: 12, border: '2px solid var(--text3)', 
-                  borderTopColor: 'var(--accent)', borderRadius: '50%', 
+                  width: 12, height: 12, border: '2px solid rgba(255,255,255,0.3)', 
+                  borderTopColor: 'white', borderRadius: '50%', 
                   display: 'inline-block', animation: 'spin 0.7s linear infinite',
-                  marginRight: 6 
                 }} />
                 Downloading...
               </>
@@ -113,9 +111,9 @@ export default function RunDetail({ runId, onBack }) {
       {/* Story */}
       <div style={{
         background: 'var(--bg2)', border: '1px solid var(--border)',
-        borderRadius: 'var(--radius)', padding: '16px 20px', marginBottom: 24,
+        borderRadius: 'var(--radius-lg)', padding: '16px 20px', marginBottom: 20,
       }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>User Story</div>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 6 }}>User Story</div>
         <p style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.6 }}>{run.story}</p>
         {plan?.summary && (
           <p style={{ fontSize: 12, color: 'var(--text2)', marginTop: 8, fontStyle: 'italic' }}>
@@ -129,13 +127,13 @@ export default function RunDetail({ runId, onBack }) {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'auto repeat(5, 1fr)', gap: 14, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'auto repeat(5, 1fr)', gap: 12, marginBottom: 20 }}>
         <div style={{
           background: 'var(--bg2)', border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-lg)', padding: '18px 24px',
+          borderRadius: 'var(--radius-lg)', padding: '16px 20px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <RiskGauge score={run.risk_score ?? 0} level={run.risk_level ?? 'low'} size={140} />
+          <RiskGauge score={run.risk_score ?? 0} level={run.risk_level ?? 'low'} size={130} />
         </div>
         {[
           { label: 'Total Tests', value: results.length, color: 'var(--text)' },
@@ -146,11 +144,11 @@ export default function RunDetail({ runId, onBack }) {
         ].map(({ label, value, color }) => (
           <div key={label} style={{
             background: 'var(--bg2)', border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-lg)', padding: '18px 16px',
+            borderRadius: 'var(--radius-lg)', padding: '16px',
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
           }}>
-            <div style={{ fontSize: 26, fontWeight: 700, color, lineHeight: 1 }}>{value}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color, lineHeight: 1 }}>{value}</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</div>
           </div>
         ))}
       </div>
@@ -161,23 +159,26 @@ export default function RunDetail({ runId, onBack }) {
       )}
 
       {/* Filter tabs */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
         {FILTERS.map(f => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
             style={{
-              padding: '6px 14px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+              padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600,
               background: filter === f.key ? 'var(--accent)' : 'var(--bg3)',
               color: filter === f.key ? '#fff' : 'var(--text2)',
               border: `1px solid ${filter === f.key ? 'var(--accent)' : 'var(--border2)'}`,
+              transition: 'background 0.15s ease, color 0.15s ease, border-color 0.15s ease',
             }}
+            onMouseEnter={e => { if (filter !== f.key) { e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.borderColor = 'var(--border3)' } }}
+            onMouseLeave={e => { if (filter !== f.key) { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.borderColor = 'var(--border2)' } }}
           >
             {f.label}
             <span style={{
-              marginLeft: 6,
-              background: filter === f.key ? 'rgba(255,255,255,0.2)' : 'var(--bg2)',
-              borderRadius: 99, padding: '1px 6px', fontSize: 11,
+              marginLeft: 5,
+              background: filter === f.key ? 'rgba(255,255,255,0.2)' : 'var(--bg4)',
+              borderRadius: 99, padding: '1px 6px', fontSize: 10,
             }}>{f.count}</span>
           </button>
         ))}
@@ -204,14 +205,16 @@ function RiskBreakdown({ level, regressions, failed }) {
     critical: `Release BLOCKED — ${regressions} regression(s) and ${failed} failure(s).`,
   }
   const colors = { low: 'var(--green)', medium: 'var(--amber)', high: 'var(--orange)', critical: 'var(--red)' }
+  const bgs = { low: 'rgba(34,197,94,0.08)', medium: 'rgba(245,158,11,0.08)', high: 'rgba(249,115,22,0.08)', critical: 'rgba(239,68,68,0.08)' }
+  const borders = { low: 'rgba(34,197,94,0.25)', medium: 'rgba(245,158,11,0.25)', high: 'rgba(249,115,22,0.25)', critical: 'rgba(239,68,68,0.3)' }
   const c = colors[level] || 'var(--text)'
   return (
     <div style={{
-      background: `${c}10`, border: `1px solid ${c}35`,
-      borderRadius: 'var(--radius)', padding: '12px 18px', marginBottom: 22,
+      background: bgs[level] || 'transparent', border: `1px solid ${borders[level] || 'var(--border)'}`,
+      borderRadius: 'var(--radius)', padding: '12px 16px', marginBottom: 20,
       display: 'flex', alignItems: 'center', gap: 10, fontSize: 14,
     }}>
-      <span style={{ fontSize: 18 }}>{ { low:'✅', medium:'⚠️', high:'🚫', critical:'🔴' }[level] }</span>
+      <span style={{ fontSize: 16 }}>{ { low:'✅', medium:'⚠️', high:'🚫', critical:'🔴' }[level] }</span>
       <span style={{ color: c, fontWeight: 600 }}>{recs[level]}</span>
     </div>
   )

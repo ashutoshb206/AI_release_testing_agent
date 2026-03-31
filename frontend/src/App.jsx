@@ -51,102 +51,97 @@ function AppContent() {
 
       {/* Sidebar */}
       <div style={{ 
-        width: 280, 
+        width: 256, 
         background: 'var(--bg2)', 
         borderRight: '1px solid var(--border)', 
         display: 'flex', 
         flexDirection: 'column',
-        padding: '32px 20px',
-        backdropFilter: 'blur(10px)'
+        padding: '28px 16px',
+        flexShrink: 0,
       }}>
         {/* Logo/Branding */}
-        <div style={{ marginBottom: 40 }}>
+        <div style={{ marginBottom: 32, paddingLeft: 8 }}>
           <div style={{ 
-            fontSize: 24, 
-            fontWeight: 800, 
-            marginBottom: 8, 
-            color: 'var(--text)',
             display: 'flex',
             alignItems: 'center',
-            gap: 12
+            gap: 10,
+            marginBottom: 4,
           }}>
             <div style={{
-              width: 40,
-              height: 40,
-              borderRadius: '12px',
-              background: 'var(--gradient-accent)',
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              background: 'var(--accent)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 20
+              fontSize: 16,
+              flexShrink: 0,
             }}>
               🤖
             </div>
-            AI Testing Agent
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.01em' }}>
+              AI Testing Agent
+            </span>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: 'var(--text3)', paddingLeft: 42, lineHeight: 1.4 }}>
             Autonomous testing powered by AI
           </div>
         </div>
 
         {/* Navigation */}
         <nav style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text3)', marginBottom: 16 }}>
-            Menu
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em', color: 'var(--text3)', marginBottom: 8, paddingLeft: 8 }}>
+            Navigation
           </div>
-          {NAV.map(item => (
-            <button
-              key={item.key}
-              onClick={() => setView(item.key)}
-              style={{
-                width: '100%',
-                padding: '14px 18px',
-                marginBottom: 6,
-                borderRadius: 'var(--radius)',
-                textAlign: 'left',
-                fontSize: 14,
-                border: 'none',
-                cursor: 'pointer',
-                background: view === item.key ? 'var(--bg3)' : 'transparent',
-                color: view === item.key ? 'var(--accent2)' : 'var(--text2)',
-                fontWeight: view === item.key ? 600 : 400,
-                borderLeft: view === item.key ? '3px solid var(--accent)' : 'none',
-                paddingLeft: view === item.key ? '15px' : '18px',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12
-              }}
-            >
-              <span style={{ fontSize: 18 }}>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {NAV.map(item => {
+            const isActive = view === item.key
+            return (
+              <button
+                key={item.key}
+                onClick={() => setView(item.key)}
+                style={{
+                  width: '100%',
+                  padding: '9px 12px',
+                  marginBottom: 2,
+                  borderRadius: 'var(--radius)',
+                  textAlign: 'left',
+                  fontSize: 14,
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: isActive ? 'var(--accent-bg2)' : 'transparent',
+                  color: isActive ? 'var(--accent2)' : 'var(--text2)',
+                  fontWeight: isActive ? 600 : 400,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  transition: 'background 0.15s ease, color 0.15s ease',
+                }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--text)' } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text2)' } }}
+              >
+                <span style={{ fontSize: 16, width: 20, textAlign: 'center', flexShrink: 0 }}>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            )
+          })}
         </nav>
 
         {/* Footer */}
         <div style={{ 
-          fontSize: 11, 
-          color: 'var(--text3)', 
-          textAlign: 'center',
-          paddingTop: 20,
+          paddingTop: 16,
           borderTop: '1px solid var(--border)',
-          lineHeight: 1.5
         }}>
-          <div style={{ marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Powered by
-          </div>
-          <div style={{ color: 'var(--accent2)', fontWeight: 500 }}>
-            {config.provider}
-          </div>
-          <div style={{ fontSize: 10, marginTop: 2 }}>
-            {config.model}
+          <div style={{ fontSize: 11, color: 'var(--text3)', paddingLeft: 8 }}>
+            <span style={{ fontWeight: 500, color: 'var(--text2)' }}>{config.provider}</span>
+            <span style={{ margin: '0 4px' }}>·</span>
+            <span>{config.model}</span>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <main style={{ flex: 1, overflow: 'auto', padding: '40px 32px', background: 'var(--bg)' }}>
+      <main style={{ flex: 1, overflow: 'auto', padding: '40px 40px', background: 'var(--bg)' }}>
         {view === 'new' && (
           <StoryInput onSubmit={handleSubmit} loading={loading} error={error} />
         )}
