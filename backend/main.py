@@ -1,12 +1,14 @@
 import asyncio
 import json
+import logging
 import os
+import time
 import uuid
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
 
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,6 +16,17 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# ──────────────────────────────────────────────
+# Logging configuration
+# ──────────────────────────────────────────────
+
+logging.basicConfig(
+    level=getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO),
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+)
+logger = logging.getLogger("api")
 
 from database import init_db, get_db
 from executor import execute_test_run
@@ -33,6 +46,28 @@ _fastapi_app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+@_fastapi_app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log every incoming request and its response status/duration."""
+    start = time.monotonic()
+    logger.debug("→ %s %s", request.method, request.url.path)
+    try:
+        response = await call_next(request)
+    except Exception as exc:  # pragma: no cover
+        elapsed = time.monotonic() - start
+        logger.error(
+            "✗ %s %s raised %s after %.3fs",
+            request.method, request.url.path, type(exc).__name__, elapsed,
+        )
+        raise
+    elapsed = time.monotonic() - start
+    logger.info(
+        "← %s %s  status=%d  %.3fs",
+        request.method, request.url.path, response.status_code, elapsed,
+    )
+    return response
 
 
 class _OuterCORSMiddleware:
@@ -120,6 +155,10 @@ def startup():
 async def create_run(req: RunRequest, background_tasks: BackgroundTasks):
     """Create a new test run and start execution in the background."""
     run_id = str(uuid.uuid4())
+    logger.info(
+        "POST /api/runs  run_id=%s  app_url=%s  story=%r",
+        run_id, req.app_url, (req.story or "")[:80],
+    )
     db = get_db()
     db.execute("""
         INSERT INTO test_runs (id, story, app_url, status, created_at)
@@ -131,12 +170,15 @@ async def create_run(req: RunRequest, background_tasks: BackgroundTasks):
     background_tasks.add_task(
         execute_test_run, run_id, req.story, req.acceptance_criteria, req.app_url
     )
+    logger.debug("POST /api/runs  run_id=%s queued for background execution", run_id)
     return {"run_id": run_id}
 
 
 @_fastapi_app.get("/api/runs/{run_id}/stream")
 async def stream_run(run_id: str):
     """Server-Sent Events: push live test results as they come in."""
+    logger.info("GET /api/runs/%s/stream  SSE connection opened", run_id)
+
     async def event_gen():
         db = get_db()
         seen_ids: set = set()
@@ -148,6 +190,7 @@ async def stream_run(run_id: str):
             ).fetchone()
 
             if not run_row:
+                logger.warning("GET /api/runs/%s/stream  run not found", run_id)
                 yield f"data: {json.dumps({'type': 'error', 'message': 'Run not found'})}\n\n"
                 break
 
@@ -163,11 +206,19 @@ async def stream_run(run_id: str):
                     seen_ids.add(rid)
                     payload = dict(row)
                     payload.pop("screenshot", None)   # keep stream lean
+                    logger.debug(
+                        "GET /api/runs/%s/stream  streaming result id=%s status=%s",
+                        run_id, rid, payload.get("status"),
+                    )
                     yield f"data: {json.dumps({'type': 'result', 'data': payload})}\n\n"
 
             status = run_row["status"]
 
             if status in ("completed", "failed"):
+                logger.info(
+                    "GET /api/runs/%s/stream  run finished status=%s  closing SSE",
+                    run_id, status,
+                )
                 run_data = dict(run_row)
                 run_data.pop("test_plan", None)
                 yield f"data: {json.dumps({'type': 'completed', 'data': run_data})}\n\n"
@@ -194,6 +245,7 @@ async def stream_run(run_id: str):
 
 @_fastapi_app.get("/api/runs")
 def list_runs():
+    logger.debug("GET /api/runs  fetching recent runs")
     db = get_db()
     rows = db.execute(
         "SELECT id, story, app_url, status, risk_score, risk_level, "
@@ -201,20 +253,27 @@ def list_runs():
         "FROM test_runs ORDER BY created_at DESC LIMIT 30"
     ).fetchall()
     db.close()
+    logger.info("GET /api/runs  returned %d run(s)", len(rows))
     return [dict(r) for r in rows]
 
 
 @_fastapi_app.get("/api/runs/{run_id}")
 def get_run(run_id: str):
+    logger.debug("GET /api/runs/%s  fetching run details", run_id)
     db = get_db()
     run = db.execute("SELECT * FROM test_runs WHERE id = ?", (run_id,)).fetchone()
     if not run:
+        logger.warning("GET /api/runs/%s  run not found", run_id)
         raise HTTPException(404, "Run not found")
     results = db.execute(
         "SELECT * FROM test_results WHERE run_id = ? ORDER BY created_at",
         (run_id,)
     ).fetchall()
     db.close()
+    logger.info(
+        "GET /api/runs/%s  status=%s  results=%d",
+        run_id, run["status"], len(results),
+    )
     return {
         "run": dict(run),
         "results": [dict(r) for r in results]
@@ -223,36 +282,43 @@ def get_run(run_id: str):
 
 @_fastapi_app.get("/api/runs/{run_id}/report", response_class=HTMLResponse)
 def get_report(run_id: str):
+    logger.debug("GET /api/runs/%s/report  generating HTML report", run_id)
     db = get_db()
     run = db.execute("SELECT * FROM test_runs WHERE id = ?", (run_id,)).fetchone()
     if not run:
+        logger.warning("GET /api/runs/%s/report  run not found", run_id)
         raise HTTPException(404, "Run not found")
     results = db.execute(
         "SELECT * FROM test_results WHERE run_id = ?", (run_id,)
     ).fetchall()
     db.close()
+    logger.info("GET /api/runs/%s/report  rendering report for %d result(s)", run_id, len(results))
     return generate_html_report(dict(run), [dict(r) for r in results])
 
 
 @_fastapi_app.delete("/api/runs/{run_id}")
 def delete_run(run_id: str):
+    logger.info("DELETE /api/runs/%s  deleting run and associated results", run_id)
     db = get_db()
     db.execute("DELETE FROM test_results WHERE run_id = ?", (run_id,))
     db.execute("DELETE FROM test_runs WHERE id = ?", (run_id,))
     db.commit()
     db.close()
+    logger.debug("DELETE /api/runs/%s  deleted successfully", run_id)
     return {"deleted": True}
 
 
 @_fastapi_app.post("/api/jira/fetch")
 def fetch_jira_ticket(req: JiraFetchRequest):
     """Fetch ticket data from Jira API or return mock data if no token."""
+    logger.info("POST /api/jira/fetch  base_url=%s  ticket_id=%s", req.base_url, req.ticket_id)
     jira_token = os.getenv("JIRA_TOKEN")
     
     if jira_token and jira_token != "your_jira_token_here":
         try:
             # Real Jira API call
             url = f"{req.base_url.rstrip('/')}/rest/api/2/issue/{req.ticket_id}"
+            logger.debug("POST /api/jira/fetch  calling Jira API url=%s", url)
             headers = {
                 "Authorization": f"Bearer {jira_token}",
                 "Accept": "application/json"
@@ -261,7 +327,8 @@ def fetch_jira_ticket(req: JiraFetchRequest):
             request = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(request) as response:
                 data = json.loads(response.read().decode())
-                
+            
+            logger.debug("POST /api/jira/fetch  ticket_id=%s fetched from Jira (live)", req.ticket_id)
             return {
                 "summary": data.get("fields", {}).get("summary", "No summary available"),
                 "description": data.get("fields", {}).get("description", "No description available"),
@@ -271,9 +338,15 @@ def fetch_jira_ticket(req: JiraFetchRequest):
             }
         except Exception as e:
             # Fall back to mock on any error
-            pass
+            logger.warning(
+                "POST /api/jira/fetch  ticket_id=%s Jira API call failed (%s), falling back to mock",
+                req.ticket_id, type(e).__name__,
+            )
+    else:
+        logger.debug("POST /api/jira/fetch  no valid JIRA_TOKEN configured, using mock data")
     
     # Mock response for demo or when no token is configured
+    logger.info("POST /api/jira/fetch  ticket_id=%s returning demo_mode=True", req.ticket_id)
     return {
         "summary": "implement secure user authentication with login and logout functionality",
         "description": "1. User should be able to log in with valid credentials\n2. User should see appropriate error messages for invalid credentials\n3. User should be able to log out and be redirected to login page\n4. Session should be maintained while user is logged in\n5. Password field should be masked during input",
@@ -286,6 +359,7 @@ def fetch_jira_ticket(req: JiraFetchRequest):
 @_fastapi_app.get("/api/defect-memory")
 def get_defect_memory():
     """Get test cases that have failed multiple times across different runs."""
+    logger.debug("GET /api/defect-memory  querying defect memory")
     db = get_db()
     rows = db.execute("""
         SELECT 
@@ -301,7 +375,7 @@ def get_defect_memory():
         LIMIT 20
     """).fetchall()
     db.close()
-    
+    logger.info("GET /api/defect-memory  returned %d defect(s)", len(rows))
     return [dict(row) for row in rows]
 
 
@@ -309,6 +383,7 @@ def get_defect_memory():
 def get_config():
     """Get current LLM provider and model configuration."""
     provider = os.getenv("MODEL_PROVIDER", "groq")
+    logger.debug("GET /api/config  MODEL_PROVIDER=%s", provider)
     
     if provider == "groq":
         model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
@@ -326,6 +401,7 @@ def get_config():
         model = "Unknown"
         provider_name = "Unknown"
     
+    logger.info("GET /api/config  provider=%s  model=%s", provider_name, model)
     return {
         "provider": provider_name,
         "model": model.replace("-", " ").replace("_", " ").title()
